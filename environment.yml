@@ -1,0 +1,15 @@
+name: sw2023
+channels:
+  - pytorch
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10.*
+  - pytorch::pytorch=2.0.*
+  - pytorch::torchvision=0.15.*
+  - conda-forge::lightning=2.0.*
+  - conda-forge::torchmetrics=1.1.*
+  - numpy
+  - matplotlib
+  - opencv
+  - pandas
