@@ -31,7 +31,8 @@ def main():
             break
         frame = cv2.flip(frame, 1)  # Flip around y
         c_y, c_x = frame.shape[0] // 2, frame.shape[1] // 2
-        capture_rec = ((0, c_y - 256), (512, c_y + 256))
+        capture_rec_size = 256
+        capture_rec = ((0, c_y - capture_rec_size // 2), (capture_rec_size, c_y + capture_rec_size // 2))
         font_pos = (capture_rec[0][0] + 20, capture_rec[1][1] - 20)
         capture = key in [ord('s'), ord('p'), ord('r')]
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
