@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def main():
-    root = Path.home().joinpath('StudyWeek2023', 'dataset')
+    root = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'dataset')
     root.mkdir(parents=False, exist_ok=True)
     storage = {
         ord('r'): root / 'rock',
