@@ -40,6 +40,7 @@ class RPSDataset(Dataset):
             ])
         else:
             self.augmentation = None
+        self.m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
 
     @classmethod
     def splits_from_dir(cls, data_dir: str | Path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'dataset')) -> dict[str, list[Path]]:
@@ -66,11 +67,11 @@ class RPSDataset(Dataset):
     def load_sample(self, sample: Path) -> tuple[torch.Tensor, torch.Tensor]:
         img = torch.from_numpy(
             cv2.cvtColor(cv2.imread(str(sample)), cv2.COLOR_BGR2RGB)
-        )
+        ).permute(2, 0, 1)
         clazz = torch.tensor(self.cls2int[sample.stem.split('_')[0]])
         if self.augmentation is not None:
             img = self.augmentation(img)
-        img = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms(img)
+        img = self.m_net_transform(img)
         return img, clazz
 
     def __getitem__(self, index) -> T_co:
