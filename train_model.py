@@ -42,7 +42,7 @@ class RPSDataset(Dataset):
             self.augmentation = None
 
     @classmethod
-    def splits_from_dir(cls, data_dir: str | Path = Path.home().joinpath('StudyWeek2023', 'dataset')) -> dict[str, list[Path]]:
+    def splits_from_dir(cls, data_dir: str | Path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'dataset')) -> dict[str, list[Path]]:
         samples = {}
         for d in data_dir.iterdir():
             if d.is_dir():
@@ -82,7 +82,7 @@ class RPSDatamodule(LightningDataModule):
         self,
         batch_size: int = 16,
         num_workers: int = 0,
-        data_dir: str | Path = Path.home().joinpath('StudyWeek2023', 'dataset'),
+        data_dir: str | Path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'dataset'),
         augmentation: bool = True,
     ):
         super().__init__()
@@ -169,7 +169,7 @@ class MobileNetV3RPS(LightningModule):
 
 
 def main():
-    experiments_root = Path.home().joinpath('StudyWeek2023', 'experiments')
+    experiments_root = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments')
     experiments_root.mkdir(parents=False, exist_ok=True)
     curr_exp_root = experiments_root.joinpath(uuid4().hex)
     curr_exp_root.mkdir(parents=False, exist_ok=False)
