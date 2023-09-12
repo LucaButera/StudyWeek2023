@@ -23,6 +23,11 @@ def recognition():
         1: 'paper',
         2: 'scissors'
     }
+    storage_invert = {
+        'rock': 0,
+        'paper': 1,
+        'scissors': 2
+    }
 
     model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '8d1dea97797e42e6bfee46cfe074e7cc', 'checkpoints', 'epoch=8-val_acc=0.86.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
@@ -75,7 +80,8 @@ def recognition():
             frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.imshow(window, frame)
             cv2.waitKey(3000)
-
+            guess = storage_invert[guess]
+            choice = None
             choice = [0, 1, 2]
             algorithm_guess = random.choice(choice)
             frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 30, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
