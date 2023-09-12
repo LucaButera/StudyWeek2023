@@ -94,13 +94,14 @@ def r_p_s_output(algorithm_guess):
 
     frame = cv2.putText(recognition().frame, f'I will choose {recognition().storage(algorithm_guess)}', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
     if algorithm_guess == recognition().guess:
-        # It's a tie, no winner.
+        frame = cv2.putText(recognition().frame, 'Its a tie no one wins ', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
     elif (algorithm_guess == 0 and recognition().guess == 2) or \
      (algorithm_guess == 1 and recognition().guess == 0) or \
      (algorithm_guess == 2 and recognition().guess == 1):
-        # Algorithm wins
+        frame = cv2.putText(recognition().frame, 'I won muhahaha', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
     else:
-        # User wins
+        frame = cv2.putText(recognition().frame, 'You won ☹', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+
     cv2.imshow(recognition().window, frame)
     cv2.waitKey(2000)
 
