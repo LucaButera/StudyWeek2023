@@ -12,6 +12,7 @@ from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
 
 import random
 
+import itertools
 
 def main():
     recognition()
@@ -29,7 +30,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '8d1dea97797e42e6bfee46cfe074e7cc', 'checkpoints', 'epoch=8-val_acc=0.86.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '9895b659b3894132947cc1842ac79ae5', 'checkpoints', 'epoch=9-val_acc=0.83.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
     augmentation = Compose([
@@ -82,8 +83,12 @@ def recognition():
             cv2.waitKey(3000)
             guess = storage_invert[guess]
             choice = None
-            choice = [0, 1, 2]
-            algorithm_guess = random.choice(choice)
+            probabilites = [0.296, 0.354, 0.35]
+            totals = list(itertools.accumulate(probabilites))
+            n = random.uniform(0, totals[-1])
+            for i, total in enumerate(totals):
+                if n <= total:
+                    algorithm_guess = i
             frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 30, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
             if algorithm_guess == guess:
