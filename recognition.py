@@ -13,6 +13,7 @@ from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
 import random
 
 import itertools
+import numpy as np
 
 def main():
     recognition()
@@ -82,21 +83,16 @@ def recognition():
             cv2.imshow(window, frame)
             cv2.waitKey(3000)
             guess = storage_invert[guess]
-            choice = None
-            probabilites = [0.296, 0.354, 0.35]
-            totals = list(itertools.accumulate(probabilites))
-            n = random.uniform(0, totals[-1])
-            for i, total in enumerate(totals):
-                if n <= total:
-                    algorithm_guess = i
-            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 30, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_SIMPLEX, 1, (64, 64, 64), 3)
 
-            if algorithm_guess == guess:
-                frame = cv2.putText(frame, 'Its a tie no one wins', (capture_rec[0][0] + 30, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-            elif (algorithm_guess == 0 and guess == 2) or (algorithm_guess == 1 and guess == 0) or (algorithm_guess == 2 and guess == 1):
-                frame = cv2.putText(frame, 'I won muhahaha', (capture_rec[0][0] + 30, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (10, 10, 255), 3)
-            elif (algorithm_guess == 2 and guess == 0) or (algorithm_guess == 0 and guess == 1) or (algorithm_guess == 1 and guess == 2):
-                frame = cv2.putText(frame, 'You won', (capture_rec[0][0] + 30, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (26, 255, 10), 3)
+            probabilities = np.random.multinomial(1, [1/3.378378378378378, 1/2.824858757062147, 1/2.857142857142857]*3)
+
+            if probabilities[0] == 1:
+                algorithm_guess = 1
+            if probabilities[1] == 1:
+                algorithm_guess = 2
+            if probabilities[2] == 1:
+               algorithm_guess = 0
+            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 30, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_SIMPLEX, 1, (64, 64, 64), 3)
 
             cv2.imshow(window, frame)
             cv2.waitKey(5000)
