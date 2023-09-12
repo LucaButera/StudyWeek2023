@@ -7,7 +7,6 @@ import torch
 
 from train_model import MobileNetV3RPS
 
-
 def main():
 
     storage = {
@@ -54,8 +53,7 @@ def main():
             crop = crop / 255.0
             input_tensor = torch.from_numpy(crop).unsqueeze(0).float()
             prediction = model(input_tensor)
-            prediction = model(crop)
-            predicted_class_index = prediction.argmax().item()
+            predicted_class_index = prediction.argmax(prediction).item()
             guess = storage[predicted_class_index]
             frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.waitKey(750)
