@@ -66,7 +66,7 @@ def recognition():
 
         frame = cv2.rectangle(frame, top_rect_start, top_rect_end, (220, 218, 201), thickness=cv2.FILLED)
         frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (124, 124, 124), thickness=cv2.FILLED)
-        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (220, 218, 201), thickness=7)
+        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (220, 218, 201), thickness=2)
 
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 0), thickness=2)
@@ -93,7 +93,7 @@ def recognition():
             cv2.waitKey(3000)
             guess = storage_invert[guess]
             probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
-
+            algorithm_guess = None
             if probabilities[0] == 1:
                 algorithm_guess = 1
             if probabilities[1] == 1:
