@@ -31,7 +31,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'f93cadc0cab94fd6b5982edd40abe34d', 'checkpoints', 'epoch=79-val_acc=0.93.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '9895b659b3894132947cc1842ac79ae5', 'checkpoints', 'epoch=9-val_acc=0.83.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
     augmentation = Compose([
@@ -91,7 +91,7 @@ def recognition():
             cv2.imshow(window, frame)
             cv2.waitKey(3000)
             guess = storage_invert[guess]
-            probabilities = np.random.multinomial(1, [1/3.378378378378378, 1/2.824858757062147, 1/2.857142857142857]*3)
+            probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
 
             if probabilities[0] == 1:
                 algorithm_guess = 1
