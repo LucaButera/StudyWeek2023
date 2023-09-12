@@ -10,6 +10,7 @@ from torchvision.models import MobileNet_V3_Small_Weights
 from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
     RandomHorizontalFlip, RandomVerticalFlip
 
+import random
 
 def main():
     recognition()
@@ -84,6 +85,8 @@ def recognition():
 
 
 def r_p_s_algorithm():
+    choice= [0, 1, 2]
+    random.choice(choice)
 
 
 if __name__ == "__main__":
