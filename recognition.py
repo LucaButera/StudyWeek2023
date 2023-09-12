@@ -12,7 +12,11 @@ from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
 
 
 def main():
+    recognition()
+    r_p_s_algorithm()
 
+
+def recognition():
     storage = {
         0: 'rock',
         1: 'paper',
@@ -77,6 +81,9 @@ def main():
             cv2.imshow(window, frame)
     cap.release()
     cv2.destroyAllWindows()
+
+
+def r_p_s_algorithm():
 
 
 if __name__ == "__main__":
