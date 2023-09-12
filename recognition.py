@@ -6,6 +6,10 @@ from pathlib import Path
 import torch
 
 from train_model import MobileNetV3RPS
+from torchvision.models import MobileNet_V3_Small_Weights
+from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
+    RandomHorizontalFlip, RandomVerticalFlip
+
 
 def main():
 
@@ -15,10 +19,14 @@ def main():
         2: 'scissors'
     }
 
-    # model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'eea5d83be49d46f2953b2739422a2b61', 'checkpoints')
-    # model = torch.load(model_path)
-    model = MobileNetV3RPS
-
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '5ec65032805440489a7888c997ff4492', 'checkpoints', 'epoch=93-val_acc=0.93.ckpt')
+    model = MobileNetV3RPS.load_from_checkpoint(model_path)
+    m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
+    augmentation = Compose([
+                AutoAugment(AutoAugmentPolicy.CIFAR10),
+                RandomHorizontalFlip(),
+                RandomVerticalFlip(),
+            ])
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Cannot open camera")
@@ -49,15 +57,24 @@ def main():
 
         if key == ord('l'):
             crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
-            crop = crop.transpose((2, 0, 1))
-            crop = crop / 255.0
-            input_tensor = torch.from_numpy(crop).unsqueeze(0).float()
+            cv2.imshow('test', crop)
+            crop = torch.from_numpy(
+                cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+            ).permute(2, 0, 1)
+
+            crop = augmentation(crop)
+            input_tensor = m_net_transform(crop).unsqueeze(0)
+
             prediction = model(input_tensor)
-            predicted_class_index = prediction.argmax(prediction).item()
+            print(prediction)
+            predicted_class_index = prediction.argmax(dim=1).item()
             guess = storage[predicted_class_index]
             frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-            cv2.waitKey(750)
-        cv2.imshow(window, frame)
+            cv2.imshow(window, frame)
+            cv2.waitKey(2000)
+
+        else:
+            cv2.imshow(window, frame)
     cap.release()
     cv2.destroyAllWindows()
 
