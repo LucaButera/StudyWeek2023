@@ -178,7 +178,7 @@ def main():
     model = MobileNetV3RPS(lr=0.001)
     dm = RPSDatamodule(batch_size=64)
     trainer = Trainer(
-        max_epochs=100,
+        max_epochs=10,
         callbacks=[
             ModelCheckpoint(
                 dirpath=curr_exp_root/'checkpoints',

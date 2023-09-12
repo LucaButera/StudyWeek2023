@@ -14,17 +14,17 @@ import random
 
 
 def main():
-    r_p_s_algorithm()
+    recognition()
 
 
-def recognition(algorithm_guess):
+def recognition():
     storage = {
         0: 'rock',
         1: 'paper',
         2: 'scissors'
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '5ec65032805440489a7888c997ff4492', 'checkpoints', 'epoch=93-val_acc=0.93.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '8d1dea97797e42e6bfee46cfe074e7cc', 'checkpoints', 'epoch=8-val_acc=0.86.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
     augmentation = Compose([
@@ -55,10 +55,8 @@ def recognition(algorithm_guess):
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
 
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 255))
-        frame = cv2.putText(frame, "l - login answer", (capture_rec[0][0] + 30, capture_rec[0][1] - 200),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-        frame = cv2.putText(frame, "q - Quit", (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+        frame = cv2.putText(frame, "l - login answer", (capture_rec[0][0] + 30, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+        frame = cv2.putText(frame, "q - Quit", (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
         if key == ord('l'):
             crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
@@ -74,39 +72,28 @@ def recognition(algorithm_guess):
             print(prediction)
             predicted_class_index = prediction.argmax(dim=1).item()
             guess = storage[predicted_class_index]
-            frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+            frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.imshow(window, frame)
-            cv2.waitKey(2000)
-            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}',
-                                (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+            cv2.waitKey(3000)
+
+            choice = [0, 1, 2]
+            algorithm_guess = random.choice(choice)
+            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 30, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+
             if algorithm_guess == guess:
-                frame = cv2.putText(frame, 'Its a tie no one wins ',
-                                    (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-            elif (algorithm_guess == 0 and guess == 2) or \
-                    (algorithm_guess == 1 and guess == 0) or \
-                    (algorithm_guess == 2 and guess == 1):
-                frame = cv2.putText(frame, 'I won muhahaha',
-                                    (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-            else:
-                frame = cv2.putText(frame, 'You won ☹',
-                                    (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+                frame = cv2.putText(frame, 'Its a tie no one wins', (capture_rec[0][0] + 30, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+            elif (algorithm_guess == 0 and guess == 2) or (algorithm_guess == 1 and guess == 0) or (algorithm_guess == 2 and guess == 1):
+                frame = cv2.putText(frame, 'I won muhahaha', (capture_rec[0][0] + 30, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+            elif (algorithm_guess == 2 and guess == 0) or (algorithm_guess == 0 and guess == 1) or (algorithm_guess == 1 and guess == 2):
+                frame = cv2.putText(frame, 'You won', (capture_rec[0][0] + 30, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
             cv2.imshow(window, frame)
-            cv2.waitKey(2000)
+            cv2.waitKey(5000)
 
         else:
             cv2.imshow(window, frame)
     cap.release()
     cv2.destroyAllWindows()
-
-
-def r_p_s_algorithm():
-    choice = [0, 1, 2]
-    recognition(random.choice(choice))
 
 
 if __name__ == "__main__":
