@@ -86,8 +86,16 @@ def recognition():
 
 def r_p_s_algorithm():
     choice= [0, 1, 2]
-    random.choice(choice)
+    r_p_s_output(random.choice(choice))
 
+def r_p_s_output(algorithmguess):
+    storage = {
+        0: 'rock',
+        1: 'paper',
+        2: 'scissors'
+    }
+    frame = cv2.putText(recognition().frame, f'I will choose {storage(algorithmguess)}', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+    cv2.imshow(recognition().window, frame)
 
 if __name__ == "__main__":
     main()
