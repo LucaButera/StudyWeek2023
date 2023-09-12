@@ -31,7 +31,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '9895b659b3894132947cc1842ac79ae5', 'checkpoints', 'epoch=9-val_acc=0.83.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'f93cadc0cab94fd6b5982edd40abe34d', 'checkpoints', 'epoch=79-val_acc=0.93.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
     augmentation = Compose([
@@ -65,7 +65,8 @@ def recognition():
         bottom_rect_end = (frame.shape[1], frame.shape[0])
 
         frame = cv2.rectangle(frame, top_rect_start, top_rect_end, (220, 218, 201), thickness=cv2.FILLED)
-        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (220, 218, 201), thickness=cv2.FILLED)
+        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (124, 124, 124), thickness=cv2.FILLED)
+        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (220, 218, 201), thickness=7)
 
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 0), thickness=2)
@@ -100,7 +101,7 @@ def recognition():
             if probabilities[2] == 1:
                algorithm_guess = 0
 
-            frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 10, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+            frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 10, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1)
 
             if algorithm_guess == guess:
                 frame = cv2.putText(frame, 'Result: Its a tie no one wins', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (255, 0, 0), 1)
