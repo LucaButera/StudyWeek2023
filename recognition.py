@@ -77,7 +77,7 @@ def recognition(algorithm_guess):
             frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
-            frame = cv2.putText(frame, f'I will choose {storage(algorithm_guess)}',
+            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}',
                                 (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             if algorithm_guess == guess:
