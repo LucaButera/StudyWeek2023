@@ -100,7 +100,7 @@ def r_p_s_output(algorithm_guess):
      (algorithm_guess == 2 and recognition().guess == 1):
         # Algorithm wins
     else:
-        # Recognition wins
+        # User wins
     cv2.imshow(recognition().window, frame)
     cv2.waitKey(2000)
 
