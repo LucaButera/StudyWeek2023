@@ -12,6 +12,7 @@ from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
 
 import random
 
+
 def main():
     recognition()
     r_p_s_algorithm()
@@ -87,6 +88,7 @@ def recognition():
 def r_p_s_algorithm():
     choice = [0, 1, 2]
     r_p_s_output(random.choice(choice))
+
 
 def r_p_s_output(algorithm_guess):
     storage = {
