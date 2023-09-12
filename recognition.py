@@ -93,6 +93,14 @@ def r_p_s_algorithm():
 def r_p_s_output(algorithm_guess):
 
     frame = cv2.putText(recognition().frame, f'I will choose {recognition().storage(algorithm_guess)}', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+    if algorithm_guess == recognition().guess:
+        # It's a tie, no winner.
+    elif (algorithm_guess == 0 and recognition().guess == 2) or \
+     (algorithm_guess == 1 and recognition().guess == 0) or \
+     (algorithm_guess == 2 and recognition().guess == 1):
+        # Algorithm wins
+    else:
+        # Recognition wins
     cv2.imshow(recognition().window, frame)
     cv2.waitKey(2000)
 
