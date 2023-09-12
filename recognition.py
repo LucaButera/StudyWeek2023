@@ -3,6 +3,8 @@ from uuid import uuid4
 import cv2
 from pathlib import Path
 
+import torch
+
 from train_model import MobileNetV3RPS
 
 
@@ -14,7 +16,9 @@ def main():
         2: 'scissors'
     }
 
-    model = MobileNetV3RPS()
+    # model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'eea5d83be49d46f2953b2739422a2b61', 'checkpoints')
+    # model = torch.load(model_path)
+    model = MobileNetV3RPS
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -46,8 +50,14 @@ def main():
 
         if key == ord('l'):
             crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
+            crop = crop.transpose((2, 0, 1))
+            crop = crop / 255.0
+            input_tensor = torch.from_numpy(crop).unsqueeze(0).float()
+            prediction = model(input_tensor)
             prediction = model(crop)
-            frame = cv2.putText(frame, f'guess: {storage[prediction]}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+            predicted_class_index = prediction.argmax().item()
+            guess = storage[predicted_class_index]
+            frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.waitKey(750)
         cv2.imshow(window, frame)
     cap.release()
