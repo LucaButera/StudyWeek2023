@@ -48,11 +48,9 @@ def recognition(algorithm_guess):
 
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
 
-        # Calculate the positions for text
         text_position1 = (capture_rec[0][0] + 30, capture_rec[0][1] - 200)
         text_position2 = (capture_rec[0][0] + 30, capture_rec[0][1] - 50)
 
-        # Make sure text doesn't overlap with the rectangle
         if text_position1[1] < capture_rec[0][1]:
             text_position1 = (text_position1[0], capture_rec[0][1] + 30)
 
@@ -78,10 +76,8 @@ def recognition(algorithm_guess):
             predicted_class_index = prediction.argmax(dim=1).item()
             guess = storage[predicted_class_index]
 
-            # Modify the text position for the guess result
             guess_text_position = (capture_rec[0][0] + 30, capture_rec[0][1] - 50)
 
-            # Make sure the guess text doesn't overlap with other text
             if guess_text_position[1] < text_position2[1]:
                 guess_text_position = (guess_text_position[0], text_position2[1] + 30)
 
