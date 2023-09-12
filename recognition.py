@@ -50,12 +50,12 @@ def recognition(algorithm_guess):
 
         text_position1 = (capture_rec[0][0] + 30, capture_rec[0][1] - 200)
         text_position2 = (capture_rec[0][0] + 30, capture_rec[0][1] - 50)
+        text_position3 = (capture_rec[1][0] + 30, capture_rec[0][1] - 50)
+        text_position4 = (capture_rec[1][0] + 30, capture_rec[1][1] + 30)
 
-        if text_position1[1] < capture_rec[0][1]:
-            text_position1 = (text_position1[0], capture_rec[0][1] + 30)
-
-        if text_position2[1] < capture_rec[0][1]:
-            text_position2 = (text_position2[0], capture_rec[0][1] + 30)
+        for text_position in [text_position1, text_position2, text_position3, text_position4]:
+            if text_position[1] < capture_rec[0][1]:
+                text_position = (text_position[0], capture_rec[0][1] + 30)
 
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 255))
         frame = cv2.putText(frame, "l - login answer", text_position1, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
