@@ -15,7 +15,7 @@ import random
 
 def main():
     recognition()
-    r_p_s_algorithm()
+
 
 
 def recognition():
@@ -78,7 +78,7 @@ def recognition():
             frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
-
+            r_p_s_algorithm()
         else:
             cv2.imshow(window, frame)
     cap.release()
@@ -98,6 +98,7 @@ def r_p_s_output(algorithm_guess):
     }
     frame = cv2.putText(recognition().frame, f'I will choose {storage(algorithm_guess)}', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
     cv2.imshow(recognition().window, frame)
+    cv2.waitKey(2000)
 
 
 if __name__ == "__main__":
