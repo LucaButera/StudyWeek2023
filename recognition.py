@@ -92,7 +92,6 @@ def r_p_s_algorithm():
 
 def r_p_s_output(algorithm_guess):
 
-    print(recognition().storage(algorithm_guess))
     frame = cv2.putText(recognition().frame, f'I will choose {recognition().storage(algorithm_guess)}', (recognition().capture_rec[0][0] + 30, recognition().capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
     cv2.imshow(recognition().window, frame)
     cv2.waitKey(2000)
