@@ -1,15 +1,9 @@
-from uuid import uuid4
-
 import cv2
-from pathlib import Path
-
 import torch
-
+from pathlib import Path
 from train_model import MobileNetV3RPS
 from torchvision.models import MobileNet_V3_Small_Weights
-from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
-    RandomHorizontalFlip, RandomVerticalFlip
-
+from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, RandomHorizontalFlip, RandomVerticalFlip
 import random
 
 
@@ -54,11 +48,20 @@ def recognition(algorithm_guess):
 
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
 
+        # Calculate the positions for text
+        text_position1 = (capture_rec[0][0] + 30, capture_rec[0][1] - 200)
+        text_position2 = (capture_rec[0][0] + 30, capture_rec[0][1] - 50)
+
+        # Make sure text doesn't overlap with the rectangle
+        if text_position1[1] < capture_rec[0][1]:
+            text_position1 = (text_position1[0], capture_rec[0][1] + 30)
+
+        if text_position2[1] < capture_rec[0][1]:
+            text_position2 = (text_position2[0], capture_rec[0][1] + 30)
+
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 255))
-        frame = cv2.putText(frame, "l - login answer", (capture_rec[0][0] + 30, capture_rec[0][1] - 200),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-        frame = cv2.putText(frame, "q - Quit", (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+        frame = cv2.putText(frame, "l - login answer", text_position1, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+        frame = cv2.putText(frame, "q - Quit", text_position2, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
         if key == ord('l'):
             crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
@@ -74,26 +77,28 @@ def recognition(algorithm_guess):
             print(prediction)
             predicted_class_index = prediction.argmax(dim=1).item()
             guess = storage[predicted_class_index]
-            frame = cv2.putText(frame, f'guess: {guess}', (capture_rec[0][0] + 30, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+
+            # Modify the text position for the guess result
+            guess_text_position = (capture_rec[0][0] + 30, capture_rec[0][1] - 50)
+
+            # Make sure the guess text doesn't overlap with other text
+            if guess_text_position[1] < text_position2[1]:
+                guess_text_position = (guess_text_position[0], text_position2[1] + 30)
+
+            frame = cv2.putText(frame, f'guess: {guess}', guess_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
-            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}',
-                                (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+
+            frame = cv2.putText(frame, f'I will choose {storage[algorithm_guess]}', guess_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+
             if algorithm_guess == guess:
-                frame = cv2.putText(frame, 'Its a tie no one wins ',
-                                    (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+                frame = cv2.putText(frame, 'Its a tie no one wins ', guess_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             elif (algorithm_guess == 0 and guess == 2) or \
                     (algorithm_guess == 1 and guess == 0) or \
                     (algorithm_guess == 2 and guess == 1):
-                frame = cv2.putText(frame, 'I won muhahaha',
-                                    (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+                frame = cv2.putText(frame, 'I won muhahaha', guess_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             else:
-                frame = cv2.putText(frame, 'You won ☹',
-                                    (capture_rec[0][0] + 30, capture_rec[0][1] - 50),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+                frame = cv2.putText(frame, 'You won ☹', guess_text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
