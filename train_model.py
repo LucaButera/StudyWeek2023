@@ -195,7 +195,7 @@ def main():
     trainer = Trainer(
         accelerator='auto',
         log_every_n_steps=1,
-        max_epochs=50,
+        max_epochs=69,
         callbacks=[
             ModelCheckpoint(
                 dirpath=curr_exp_root/'checkpoints',
