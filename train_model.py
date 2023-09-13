@@ -1,16 +1,17 @@
+from itertools import chain
 from pathlib import Path
 from uuid import uuid4
 
 import cv2
+import torch
 from lightning import LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 from numpy.random import default_rng
 from torch.nn import CrossEntropyLoss
-from torch.utils.data.dataset import T_co
-
-import torch
+from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import Dataset, DataLoader
+from torch.utils.data.dataset import T_co
 from torchmetrics import Accuracy
 from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
 from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
@@ -95,8 +96,10 @@ class RPSDatamodule(LightningDataModule):
 
     def setup(self, stage=None):
         splits = RPSDataset.splits_from_dir(self.data_dir)
+        joined_splits = list(chain.from_iterable(splits.values()))
+        assert len(joined_splits) == len(set(joined_splits))
         self.datasets = {
-            k: RPSDataset(splits[k], augmentation=self.augmentation)
+            k: RPSDataset(splits[k], augmentation=self.augmentation and k == 'train')
             for k in splits
         }
 
@@ -140,33 +143,45 @@ class MobileNetV3RPS(LightningModule):
     def forward(self, x):
         return self.model(x)
 
-    def _shared_step(self, batch):
+    def training_step(self, batch, batch_idx):
         img, gt = batch
         logits = self.model(img)
         loss = self.loss(logits, gt)
         pred = torch.argmax(logits, dim=1)
-        return loss, gt, pred
-
-    def training_step(self, batch, batch_idx):
-        loss, gt, pred = self._shared_step(batch)
         self.log("train_loss", loss)
-        self.train_acc(pred, gt)
-        self.log("train_acc", self.train_acc, on_epoch=True, on_step=False, prog_bar=True)
+        self.train_acc.update(pred, gt)
         return loss
 
+    def on_train_epoch_end(self):
+        self.log('train_acc', self.train_acc.compute(), on_step=False, on_epoch=True, prog_bar=True)
+        self.train_acc.reset()
+
     def validation_step(self, batch, batch_idx):
-        loss, gt, pred = self._shared_step(batch)
+        img, gt = batch
+        logits = self.model(img)
+        loss = self.loss(logits, gt)
+        pred = torch.argmax(logits, dim=1)
         self.log("val_loss", loss)
-        self.valid_acc(pred, gt)
-        self.log("val_acc", self.valid_acc, on_epoch=True, on_step=False, prog_bar=True)
+        self.valid_acc.update(pred, gt)
+
+    def on_validation_epoch_end(self):
+        self.log('val_acc', self.valid_acc.compute(), on_step=False, on_epoch=True, prog_bar=True)
+        self.valid_acc.reset()
 
     def test_step(self, batch, batch_idx):
-        loss, gt, pred = self._shared_step(batch)
-        self.test_acc(pred, gt)
-        self.log("test_acc", self.test_acc, on_epoch=True, on_step=False)
+        img, gt = batch
+        logits = self.model(img)
+        pred = torch.argmax(logits, dim=1)
+        self.test_acc.update(pred, gt)
+
+    def on_test_epoch_end(self):
+        self.log('test_acc', self.test_acc.compute(), on_step=False, on_epoch=True, prog_bar=True)
+        self.test_acc.reset()
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        scheduler = MultiStepLR(optimizer, milestones=[30, 40], gamma=0.1)
+        return [optimizer], [scheduler]
 
 
 def main():
@@ -175,10 +190,12 @@ def main():
     curr_exp_root = experiments_root.joinpath(uuid4().hex)
     curr_exp_root.mkdir(parents=False, exist_ok=False)
 
-    model = MobileNetV3RPS(lr=0.0001)
+    model = MobileNetV3RPS(lr=0.001)
     dm = RPSDatamodule(batch_size=64)
     trainer = Trainer(
-        max_epochs=2500,
+        accelerator='auto',
+        log_every_n_steps=1,
+        max_epochs=50,
         callbacks=[
             ModelCheckpoint(
                 dirpath=curr_exp_root/'checkpoints',
@@ -186,6 +203,7 @@ def main():
                 save_top_k=1,
                 mode="max",
                 monitor="val_acc",
+                save_last=True,
             ),
         ],
         logger=CSVLogger(
@@ -194,6 +212,7 @@ def main():
         ),
     )
     trainer.fit(model=model, datamodule=dm)
+    trainer.test(model=model, datamodule=dm, ckpt_path='best')
 
 
 if __name__ == "__main__":
