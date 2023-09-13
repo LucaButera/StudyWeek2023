@@ -81,10 +81,10 @@ def recognition():
 
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 0), thickness=2)
-        frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 10, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
-        frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 10, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
-        frame = cv2.putText(frame, "AI Rock, Paper, Scissors", (capture_rec[0][0] + 260, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
-        frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 10, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+        frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 5, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 5, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, "AI Rock, Paper, Scissors", (capture_rec[0][0] + 270, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.9, (0, 0, 0), 2, cv2.LINE_AA)
+        frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 5, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
         crop = torch.from_numpy(
             cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
@@ -94,10 +94,10 @@ def recognition():
         input_tensor = m_net_transform(crop).unsqueeze(0)
 
         prediction = model(input_tensor)
-        print(prediction)
+        # print(prediction)
         predicted_class_index = prediction.argmax(dim=1).item()
         guess = storage[predicted_class_index]
-        frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+        frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 5, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         cv2.imshow(window, frame)
 
         if key == ord('l'):
@@ -145,16 +145,16 @@ def recognition():
                 if probabilities[2] == 1:
                     algorithm_guess = 1
 
-            frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 10, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1)
+            frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 5, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1, cv2.LINE_AA)
             cv2.imshow(window, frame)
             cv2.waitKey(3000)
 
             if algorithm_guess == guess:
-                frame = cv2.putText(frame, 'Result: Its a tie no one wins', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (255, 0, 0), 1)
+                frame = cv2.putText(frame, 'Result: Its a tie no one wins', (capture_rec[0][0] + 5, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (255, 0, 0), 1, cv2.LINE_AA)
             elif (algorithm_guess == 0 and guess == 2) or (algorithm_guess == 1 and guess == 0) or (algorithm_guess == 2 and guess == 1):
-                frame = cv2.putText(frame, 'Result: I won muhahaha', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (10, 10, 255), 1)
+                frame = cv2.putText(frame, 'Result: Computer Wins!', (capture_rec[0][0] + 5, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (10, 10, 255), 1, cv2.LINE_AA)
             elif (algorithm_guess == 2 and guess == 0) or (algorithm_guess == 0 and guess == 1) or (algorithm_guess == 1 and guess == 2):
-                frame = cv2.putText(frame, 'Result: You won', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (26, 255, 10), 1)
+                frame = cv2.putText(frame, 'Result: Player Wins!', (capture_rec[0][0] + 5, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (26, 255, 10), 1, cv2.LINE_AA)
 
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
