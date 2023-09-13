@@ -117,6 +117,7 @@ def recognition():
                 probabilities_paper = 1 / ((1 / probabilities_paper) - (probabilities_change / 2))
                 probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
 
+            probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
             range_check += 1
             if range_check == algorithm_range:
                 if is_most_probable:
@@ -126,7 +127,6 @@ def recognition():
             algorithm_range = randrange(11)
             range_check = 0
 
-            probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
             if is_most_probable:
                 algorithm_guess = None
                 if probabilities[0] == 1:
