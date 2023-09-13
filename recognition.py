@@ -11,6 +11,7 @@ from torchvision.transforms.v2 import AutoAugment, AutoAugmentPolicy, Compose, \
     RandomHorizontalFlip, RandomVerticalFlip
 
 import random
+from random import randrange
 
 import itertools
 import numpy as np
@@ -52,7 +53,11 @@ def recognition():
     probabilities_rock = 3.378378378378378
     probabilities_paper = 2.824858757062147
     probabilities_scissors = 2.857142857142857
+    is_most_probable = True
+    algorithm_range = randrange(11)
+    range_check = 0
     while True:
+
         ret, frame = cap.read()
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
@@ -98,6 +103,7 @@ def recognition():
         if key == ord('l'):
             guess = storage_invert[guess]
             probabilities_change = 0.2
+
             if guess == 0:
                 probabilities_rock = 1/((1 / probabilities_rock) + probabilities_change)
                 probabilities_paper = 1/((1 / probabilities_paper) - (probabilities_change/2))
@@ -112,15 +118,32 @@ def recognition():
                 probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
 
             probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
+            range_check += 1
+            if range_check == algorithm_range:
+                if is_most_probable:
+                    is_most_probable = False
+                if not is_most_probable:
+                    is_most_probable = True
+            algorithm_range = randrange(11)
+            range_check = 0
 
             probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
-            algorithm_guess = None
-            if probabilities[0] == 1:
-                algorithm_guess = 1
-            if probabilities[1] == 1:
-                algorithm_guess = 2
-            if probabilities[2] == 1:
-               algorithm_guess = 0
+            if is_most_probable:
+                algorithm_guess = None
+                if probabilities[0] == 1:
+                    algorithm_guess = 1
+                if probabilities[1] == 1:
+                    algorithm_guess = 2
+                if probabilities[2] == 1:
+                    algorithm_guess = 0
+            if not is_most_probable:
+                algorithm_guess = None
+                if probabilities[0] == 1:
+                    algorithm_guess = 2
+                if probabilities[1] == 1:
+                    algorithm_guess = 0
+                if probabilities[2] == 1:
+                    algorithm_guess = 1
 
             frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 10, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1)
             cv2.imshow(window, frame)
