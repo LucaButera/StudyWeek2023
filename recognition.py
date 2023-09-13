@@ -32,7 +32,11 @@ def recognition():
         'paper': 1,
         'scissors': 2
     }
-
+    winner_storage = {
+        0: 'User',
+        1: 'Pc',
+        2: 'draw'
+    }
     model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'dcbb562580d342a4a1149604782f7a26', 'checkpoints', 'epoch=29-val_acc=0.98.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
@@ -59,6 +63,9 @@ def recognition():
     is_most_probable = True
     algorithm_range = randrange(11)
     range_check = 0
+    pc_win = 0
+    user_win = 0
+    current_winner = 0
     while True:
 
         ret, frame = cap.read()
@@ -73,17 +80,24 @@ def recognition():
         capture_rec_size = 256
         capture_rec = ((0, c_y - capture_rec_size // 2), (capture_rec_size, c_y + capture_rec_size // 2))
 
-        top_rect_start = (capture_rec[0][0], capture_rec[0][1] - 850)
-        top_rect_end = (capture_rec[1][0], capture_rec[0][1])
-        bottom_rect_start = (0, capture_rec[1][1])
-        bottom_rect_end = (frame.shape[1], frame.shape[0])
-
-        frame = cv2.rectangle(frame, top_rect_start, top_rect_end, (220, 218, 201), thickness=cv2.FILLED,)
-        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (124, 124, 124), thickness=cv2.FILLED)
-        frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (220, 218, 201), thickness=2)
+        frame = cv2.rectangle(frame, (capture_rec[0][0], capture_rec[0][1] - 850), (capture_rec[1][0], capture_rec[0][1]), (220, 218, 201), thickness=cv2.FILLED,)
+        frame = cv2.rectangle(frame, (0, capture_rec[1][1]), (frame.shape[1], frame.shape[0]), (124, 124, 124), thickness=cv2.FILLED)
+        frame = cv2.rectangle(frame, (0, capture_rec[1][1]), (frame.shape[1], frame.shape[0]), (220, 218, 201), thickness=2)
+        frame = cv2.rectangle(frame, (500, capture_rec[1][1] - 50), (frame.shape[1], frame.shape[0] + 400), (124, 124, 124), thickness=cv2.FILLED)
+        frame = cv2.rectangle(frame, (500, capture_rec[1][1] - 50), (frame.shape[1], frame.shape[0] + 500), (220, 218, 201), thickness=2)
 
         crop = frame.copy()[capture_rec[0][1]:capture_rec[1][1], capture_rec[0][0]:capture_rec[1][0]]
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 0), thickness=2)
+        frame = cv2.putText(frame, "Results:", (capture_rec[0][0] + 505, capture_rec[0][1] + 235), cv2.FONT_HERSHEY_DUPLEX, 0.5, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, f"Pc: ({pc_win})", (capture_rec[0][0] + 505, capture_rec[0][1] + 265), cv2.FONT_HERSHEY_DUPLEX, 0.5, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, f"User: ({user_win})", (capture_rec[0][0] + 505, capture_rec[0][1] + 285), cv2.FONT_HERSHEY_DUPLEX, 0.5, (64, 64, 64), 1, cv2.LINE_AA)
+        if pc_win > user_win:
+            current_winner = 1
+        elif pc_win < user_win:
+            current_winner = 0
+        elif pc_win == user_win:
+            current_winner = 2
+        frame = cv2.putText(frame, f"Winner: ({winner_storage[current_winner]})", (capture_rec[0][0] + 505, capture_rec[0][1] + 305), cv2.FONT_HERSHEY_DUPLEX, 0.5, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 5, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 5, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, "AI Rock, Paper, Scissors", (capture_rec[0][0] + 270, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.9, (0, 0, 0), 2, cv2.LINE_AA)
@@ -97,6 +111,7 @@ def recognition():
         # print(prediction)
         predicted_class_index = prediction.argmax(dim=1).item()
         guess = storage[predicted_class_index]
+        frame = cv2.putText(frame, f"AI Confidence: {prediction}", (capture_rec[0][0] + 220, capture_rec[0][1] + 360), cv2.FONT_HERSHEY_DUPLEX, 0.4, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 5, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         cv2.imshow(window, frame)
 
@@ -151,17 +166,16 @@ def recognition():
             frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 5, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1, cv2.LINE_AA)
             cv2.imshow(window, frame)
             cv2.waitKey(3000)
-
             if algorithm_guess == guess:
                 frame = cv2.putText(frame, 'Result: Its a tie no one wins', (capture_rec[0][0] + 5, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (255, 0, 0), 1, cv2.LINE_AA)
             elif (algorithm_guess == 0 and guess == 2) or (algorithm_guess == 1 and guess == 0) or (algorithm_guess == 2 and guess == 1):
+                pc_win += 1
                 frame = cv2.putText(frame, 'Result: Computer Wins!', (capture_rec[0][0] + 5, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (10, 10, 255), 1, cv2.LINE_AA)
             elif (algorithm_guess == 2 and guess == 0) or (algorithm_guess == 0 and guess == 1) or (algorithm_guess == 1 and guess == 2):
+                user_win += 1
                 frame = cv2.putText(frame, 'Result: Player Wins!', (capture_rec[0][0] + 5, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (26, 255, 10), 1, cv2.LINE_AA)
-
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
-
         else:
             cv2.imshow(window, frame)
     cap.release()
