@@ -47,6 +47,9 @@ def recognition():
     window = "Acquisition"
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.moveWindow(window, 0, 0)
+    probabilities_rock = 3.378378378378378
+    probabilities_paper = 2.824858757062147
+    probabilities_scissors = 2.857142857142857
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -90,10 +93,26 @@ def recognition():
             predicted_class_index = prediction.argmax(dim=1).item()
             guess = storage[predicted_class_index]
             frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+
             cv2.imshow(window, frame)
             cv2.waitKey(2000)
             guess = storage_invert[guess]
-            probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
+            probabilities_change = 0.2
+            if guess == 0:
+                probabilities_rock = 1/((1 / probabilities_rock) + probabilities_change)
+                probabilities_paper = 1/((1 / probabilities_paper) - (probabilities_change/2))
+                probabilities_scissors = 1/((1/probabilities_scissors) - (probabilities_change/2))
+            if guess == 1:
+                probabilities_paper = 1 / ((1 / probabilities_paper) + probabilities_change)
+                probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
+                probabilities_scissors = 1 / ((1 / probabilities_scissors) - (probabilities_change / 2))
+            if guess == 2:
+                probabilities_scissors = 1 / ((1 / probabilities_scissors) + probabilities_change)
+                probabilities_paper = 1 / ((1 / probabilities_paper) - (probabilities_change / 2))
+                probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
+
+            probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
+
             algorithm_guess = None
             if probabilities[0] == 1:
                 algorithm_guess = 1
