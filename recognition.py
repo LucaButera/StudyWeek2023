@@ -110,8 +110,10 @@ def recognition():
         prediction = model(input_tensor)
         # print(prediction)
         predicted_class_index = prediction.argmax(dim=1).item()
+        confidence = prediction.softmax(dim=1)[0, predicted_class_index].item()
+        confidence = round(confidence * 100)
         guess = storage[predicted_class_index]
-        frame = cv2.putText(frame, f"AI Confidence: {prediction}", (capture_rec[0][0] + 220, capture_rec[0][1] + 360), cv2.FONT_HERSHEY_DUPLEX, 0.4, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, f"AI Confidence: {confidence}%", (capture_rec[0][0] + 220, capture_rec[0][1] + 360), cv2.FONT_HERSHEY_DUPLEX, 0.4, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 5, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         cv2.imshow(window, frame)
 
