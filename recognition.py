@@ -75,7 +75,7 @@ def recognition():
         bottom_rect_start = (0, capture_rec[1][1])
         bottom_rect_end = (frame.shape[1], frame.shape[0])
 
-        frame = cv2.rectangle(frame, top_rect_start, top_rect_end, (220, 218, 201), thickness=cv2.FILLED)
+        frame = cv2.rectangle(frame, top_rect_start, top_rect_end, (220, 218, 201), thickness=cv2.FILLED,)
         frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (124, 124, 124), thickness=cv2.FILLED)
         frame = cv2.rectangle(frame, bottom_rect_start, bottom_rect_end, (220, 218, 201), thickness=2)
 
@@ -85,14 +85,11 @@ def recognition():
         frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 5, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, "AI Rock, Paper, Scissors", (capture_rec[0][0] + 270, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.9, (0, 0, 0), 2, cv2.LINE_AA)
         frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 5, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
-        crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
-        crop = torch.from_numpy(
-            cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-        ).permute(2, 0, 1)
 
+        crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
+        crop = torch.from_numpy(cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)).permute(2, 0, 1)
         crop = augmentation(crop)
         input_tensor = m_net_transform(crop).unsqueeze(0)
-
         prediction = model(input_tensor)
         # print(prediction)
         predicted_class_index = prediction.argmax(dim=1).item()
