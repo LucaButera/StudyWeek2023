@@ -47,6 +47,7 @@ def recognition():
     window = "Acquisition"
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.moveWindow(window, 0, 0)
+    # probabilities
     probabilities_rock = 3.378378378378378
     probabilities_paper = 2.824858757062147
     probabilities_scissors = 2.857142857142857
@@ -76,26 +77,24 @@ def recognition():
         frame = cv2.rectangle(frame, capture_rec[0], capture_rec[1], (0, 0, 0), thickness=2)
         frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 10, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
         frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 10, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+        frame = cv2.putText(frame, "AI Rock, Paper, Scissors", (capture_rec[0][0] + 260, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
         frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 10, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+        crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
+        crop = torch.from_numpy(
+            cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+        ).permute(2, 0, 1)
+
+        crop = augmentation(crop)
+        input_tensor = m_net_transform(crop).unsqueeze(0)
+
+        prediction = model(input_tensor)
+        print(prediction)
+        predicted_class_index = prediction.argmax(dim=1).item()
+        guess = storage[predicted_class_index]
+        frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+        cv2.imshow(window, frame)
 
         if key == ord('l'):
-            crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
-            # cv2.imshow('test', crop)
-            crop = torch.from_numpy(
-                cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-            ).permute(2, 0, 1)
-
-            crop = augmentation(crop)
-            input_tensor = m_net_transform(crop).unsqueeze(0)
-
-            prediction = model(input_tensor)
-            print(prediction)
-            predicted_class_index = prediction.argmax(dim=1).item()
-            guess = storage[predicted_class_index]
-            frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
-
-            cv2.imshow(window, frame)
-            cv2.waitKey(2000)
             guess = storage_invert[guess]
             probabilities_change = 0.2
             if guess == 0:
@@ -113,6 +112,7 @@ def recognition():
 
             probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
 
+            probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
             algorithm_guess = None
             if probabilities[0] == 1:
                 algorithm_guess = 1
@@ -122,6 +122,8 @@ def recognition():
                algorithm_guess = 0
 
             frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 10, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1)
+            cv2.imshow(window, frame)
+            cv2.waitKey(3000)
 
             if algorithm_guess == guess:
                 frame = cv2.putText(frame, 'Result: Its a tie no one wins', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (255, 0, 0), 1)
