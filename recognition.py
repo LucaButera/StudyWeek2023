@@ -31,7 +31,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '5ec65032805440489a7888c997ff4492', 'checkpoints', 'epoch=33-val_acc=1.00.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'f93cadc0cab94fd6b5982edd40abe34d', 'checkpoints', 'epoch=79-val_acc=0.93.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
@@ -74,7 +74,9 @@ def recognition():
         frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 10, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
         frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 10, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
         frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 10, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
-
+        probabilities_rock = 3.378378378378378
+        probabilities_paper = 2.824858757062147
+        probabilities_scissors = 2.857142857142857
         if key == ord('l'):
             crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
             # cv2.imshow('test', crop)
@@ -90,9 +92,26 @@ def recognition():
             predicted_class_index = prediction.argmax(dim=1).item()
             guess = storage[predicted_class_index]
             frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
+
             cv2.imshow(window, frame)
             cv2.waitKey(3000)
             guess = storage_invert[guess]
+            probabilities_change = 0.05
+            if guess == 0:
+                probabilities_rock = 1/((1 / probabilities_rock) + probabilities_change)
+                probabilities_paper = 1/((1 / probabilities_paper) - (probabilities_change/2))
+                probabilities_scissors = 1/((1/probabilities_scissors) - (probabilities_change/2))
+            if guess == 1:
+                probabilities_paper = 1 / ((1 / probabilities_paper) + probabilities_change)
+                probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
+                probabilities_scissors = 1 / ((1 / probabilities_scissors) - (probabilities_change / 2))
+            if guess == 2:
+                probabilities_scissors = 1 / ((1 / probabilities_scissors) + probabilities_change)
+                probabilities_paper = 1 / ((1 / probabilities_paper) - (probabilities_change / 2))
+                probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
+
+            probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
+
             probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
             algorithm_guess = None
             if probabilities[0] == 1:
