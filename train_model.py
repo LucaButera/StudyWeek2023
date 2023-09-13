@@ -175,10 +175,10 @@ def main():
     curr_exp_root = experiments_root.joinpath(uuid4().hex)
     curr_exp_root.mkdir(parents=False, exist_ok=False)
 
-    model = MobileNetV3RPS(lr=0.001)
+    model = MobileNetV3RPS(lr=0.0001)
     dm = RPSDatamodule(batch_size=64)
     trainer = Trainer(
-        max_epochs=100,
+        max_epochs=2500,
         callbacks=[
             ModelCheckpoint(
                 dirpath=curr_exp_root/'checkpoints',

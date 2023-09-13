@@ -31,7 +31,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '5ec65032805440489a7888c997ff4492', 'checkpoints', 'epoch=33-val_acc=1.00.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '387d4468efeb4a718e524c8e6e05369e', 'checkpoints', 'epoch=752-val_acc=0.98.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
@@ -91,7 +91,7 @@ def recognition():
             guess = storage[predicted_class_index]
             frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
             cv2.imshow(window, frame)
-            cv2.waitKey(3000)
+            cv2.waitKey(2000)
             guess = storage_invert[guess]
             probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
             algorithm_guess = None
@@ -112,7 +112,7 @@ def recognition():
                 frame = cv2.putText(frame, 'Result: You won', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (26, 255, 10), 1)
 
             cv2.imshow(window, frame)
-            cv2.waitKey(4000)
+            cv2.waitKey(2000)
 
         else:
             cv2.imshow(window, frame)
