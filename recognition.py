@@ -37,7 +37,7 @@ def recognition():
         1: 'Pc',
         2: 'draw'
     }
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'dcbb562580d342a4a1149604782f7a26', 'checkpoints', 'epoch=29-val_acc=0.98.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'goodModelDir0', 'checkpoints', 'Good_Model0.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()

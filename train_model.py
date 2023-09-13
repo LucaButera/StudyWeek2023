@@ -9,7 +9,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 from numpy.random import default_rng
 from torch.nn import CrossEntropyLoss
-from torch.optim.lr_scheduler import MultiStepLR
+from torch.optim.lr_scheduler import MultiStepLR, ExponentialLR
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.dataset import T_co
 from torchmetrics import Accuracy
@@ -180,7 +180,7 @@ class MobileNetV3RPS(LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
-        scheduler = MultiStepLR(optimizer, milestones=[30, 40], gamma=0.1)
+        scheduler = MultiStepLR(optimizer, milestones=[30, 40, 60, 65], gamma=0.1)
         return [optimizer], [scheduler]
 
 
@@ -195,7 +195,7 @@ def main():
     trainer = Trainer(
         accelerator='auto',
         log_every_n_steps=1,
-        max_epochs=69,
+        max_epochs=50,
         callbacks=[
             ModelCheckpoint(
                 dirpath=curr_exp_root/'checkpoints',
@@ -216,4 +216,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    for x in range(10):
+        main()
