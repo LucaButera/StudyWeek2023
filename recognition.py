@@ -50,9 +50,12 @@ def recognition():
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.moveWindow(window, 0, 0)
     # probabilities
-    probabilities_rock = 3.378378378378378
-    probabilities_paper = 2.824858757062147
-    probabilities_scissors = 2.857142857142857
+    probabilities_rock = 0
+    probabilities_paper = 0
+    probabilities_scissors = 0
+    rock = 0
+    paper = 0
+    scissors = 0
     is_most_probable = True
     algorithm_range = randrange(11)
     range_check = 0
@@ -102,22 +105,26 @@ def recognition():
 
         if key == ord('l'):
             guess = storage_invert[guess]
-            probabilities_change = 0.2
 
             if guess == 0:
-                probabilities_rock = 1/((1 / probabilities_rock) + probabilities_change)
-                probabilities_paper = 1/((1 / probabilities_paper) - (probabilities_change/2))
-                probabilities_scissors = 1/((1/probabilities_scissors) - (probabilities_change/2))
-            if guess == 1:
-                probabilities_paper = 1 / ((1 / probabilities_paper) + probabilities_change)
-                probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
-                probabilities_scissors = 1 / ((1 / probabilities_scissors) - (probabilities_change / 2))
-            if guess == 2:
-                probabilities_scissors = 1 / ((1 / probabilities_scissors) + probabilities_change)
-                probabilities_paper = 1 / ((1 / probabilities_paper) - (probabilities_change / 2))
-                probabilities_rock = 1 / ((1 / probabilities_rock) - (probabilities_change / 2))
+               rock += 1
 
-            probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
+            if guess == 1:
+                paper += 1
+
+            if guess == 2:
+                scissors += 1
+
+            probabilities_rock = rock / (rock + paper + scissors)
+            probabilities_paper = paper / (rock + paper + scissors)
+            probabilities_scissors = scissors / (rock + paper + scissors)
+            print(probabilities_rock)
+            print(probabilities_paper)
+            print(probabilities_scissors)
+
+
+            probabilities = np.random.multinomial(1, [probabilities_rock, probabilities_paper, probabilities_scissors])
+
             range_check += 1
             if range_check == algorithm_range:
                 if is_most_probable:
