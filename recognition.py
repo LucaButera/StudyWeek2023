@@ -32,7 +32,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'f93cadc0cab94fd6b5982edd40abe34d', 'checkpoints', 'epoch=79-val_acc=0.93.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '9895b659b3894132947cc1842ac79ae5', 'checkpoints', 'epoch=9-val_acc=0.83.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
@@ -48,6 +48,9 @@ def recognition():
     window = "Acquisition"
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.moveWindow(window, 0, 0)
+    probabilities_rock = 3.378378378378378
+    probabilities_paper = 2.824858757062147
+    probabilities_scissors = 2.857142857142857
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -75,9 +78,7 @@ def recognition():
         frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 10, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
         frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 10, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
         frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 10, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
-        probabilities_rock = 3.378378378378378
-        probabilities_paper = 2.824858757062147
-        probabilities_scissors = 2.857142857142857
+
         if key == ord('l'):
             crop = cv2.resize(crop, (256, 256), interpolation=cv2.INTER_AREA)
             # cv2.imshow('test', crop)
@@ -96,7 +97,7 @@ def recognition():
 
             cv2.imshow(window, frame)
             guess = storage_invert[guess]
-            probabilities_change = 0.05
+            probabilities_change = 0.2
             if guess == 0:
                 probabilities_rock = 1/((1 / probabilities_rock) + probabilities_change)
                 probabilities_paper = 1/((1 / probabilities_paper) - (probabilities_change/2))
@@ -112,7 +113,6 @@ def recognition():
 
             probabilities = np.random.multinomial(1, [1/probabilities_rock, (1/probabilities_paper), (1/probabilities_scissors)])
 
-            probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
             algorithm_guess = None
             if probabilities[0] == 1:
                 algorithm_guess = 1
