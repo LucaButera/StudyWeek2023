@@ -15,6 +15,7 @@ import random
 import itertools
 import numpy as np
 
+
 def main():
     recognition()
 
@@ -31,7 +32,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '5ec65032805440489a7888c997ff4492', 'checkpoints', 'epoch=33-val_acc=1.00.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'f93cadc0cab94fd6b5982edd40abe34d', 'checkpoints', 'epoch=79-val_acc=0.93.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
@@ -91,7 +92,6 @@ def recognition():
             guess = storage[predicted_class_index]
             frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 10, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1)
             cv2.imshow(window, frame)
-            cv2.waitKey(3000)
             guess = storage_invert[guess]
             probabilities = np.random.multinomial(1, [1/3.378378378378378, (1/2.824858757062147), (1/2.857142857142857)])
             algorithm_guess = None
@@ -103,6 +103,8 @@ def recognition():
                algorithm_guess = 0
 
             frame = cv2.putText(frame, f'Computer: I will choose {storage[algorithm_guess]}', (capture_rec[0][0] + 10, capture_rec[0][1] + 290), cv2.FONT_HERSHEY_DUPLEX, 0.75, (0, 0, 0), 1)
+            cv2.imshow(window, frame)
+            cv2.waitKey(3000)
 
             if algorithm_guess == guess:
                 frame = cv2.putText(frame, 'Result: Its a tie no one wins', (capture_rec[0][0] + 10, capture_rec[0][1] + 320), cv2.FONT_HERSHEY_DUPLEX, 0.75, (255, 0, 0), 1)
