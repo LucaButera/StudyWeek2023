@@ -15,6 +15,7 @@ import random
 import itertools
 import numpy as np
 
+
 def main():
     recognition()
 
@@ -31,7 +32,7 @@ def recognition():
         'scissors': 2
     }
 
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', '387d4468efeb4a718e524c8e6e05369e', 'checkpoints', 'epoch=752-val_acc=0.98.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'f93cadc0cab94fd6b5982edd40abe34d', 'checkpoints', 'epoch=79-val_acc=0.93.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
@@ -44,7 +45,7 @@ def recognition():
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
-    window = "Acquisition"
+    window = "AI Powered Rock, Paper, Scissors"
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.moveWindow(window, 0, 0)
     # probabilities
