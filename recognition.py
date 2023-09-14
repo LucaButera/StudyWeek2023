@@ -37,7 +37,7 @@ def recognition():
         1: 'Pc',
         2: 'draw'
     }
-    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'goodModelDir0', 'checkpoints', 'Good_Model0.ckpt')
+    model_path = Path.home().joinpath('PycharmProjects', 'StudyWeek2023', 'experiments', 'dcbb562580d342a4a1149604782f7a26', 'checkpoints', 'epoch=29-val_acc=0.98.ckpt')
     model = MobileNetV3RPS.load_from_checkpoint(model_path)
     model.eval()
     m_net_transform = MobileNet_V3_Small_Weights.IMAGENET1K_V1.transforms()
@@ -99,7 +99,7 @@ def recognition():
             current_winner = 2
         frame = cv2.putText(frame, f"Winner: ({winner_storage[current_winner]})", (capture_rec[0][0] + 505, capture_rec[0][1] + 305), cv2.FONT_HERSHEY_DUPLEX, 0.5, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, "Move here:", (capture_rec[0][0] + 5, capture_rec[0][1] + 32), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
-        frame = cv2.putText(frame, "(L) Login answer", (capture_rec[0][0] + 5, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, "(P) Play", (capture_rec[0][0] + 5, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         frame = cv2.putText(frame, "AI Rock, Paper, Scissors", (capture_rec[0][0] + 270, capture_rec[0][1] - 85), cv2.FONT_HERSHEY_DUPLEX, 0.9, (0, 0, 0), 2, cv2.LINE_AA)
         frame = cv2.putText(frame, "(Q) Quit", (capture_rec[0][0] + 5, capture_rec[0][1] - 50), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
 
@@ -108,16 +108,15 @@ def recognition():
         crop = augmentation(crop)
         input_tensor = m_net_transform(crop).unsqueeze(0)
         prediction = model(input_tensor)
-        # print(prediction)
         predicted_class_index = prediction.argmax(dim=1).item()
         confidence = prediction.softmax(dim=1)[0, predicted_class_index].item()
         confidence = round(confidence * 100)
         guess = storage[predicted_class_index]
-        frame = cv2.putText(frame, f"AI Confidence: {confidence}%", (capture_rec[0][0] + 220, capture_rec[0][1] + 360), cv2.FONT_HERSHEY_DUPLEX, 0.4, (64, 64, 64), 1, cv2.LINE_AA)
-        frame = cv2.putText(frame, f'Your guess: {guess}', (capture_rec[0][0] + 5, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, f"AI Confidence: {confidence}%", (capture_rec[0][0] + 190, capture_rec[0][1] + 360), cv2.FONT_HERSHEY_DUPLEX, 0.5, (64, 64, 64), 1, cv2.LINE_AA)
+        frame = cv2.putText(frame, f'Your Move: {guess}', (capture_rec[0][0] + 5, capture_rec[0][1] - 20), cv2.FONT_HERSHEY_DUPLEX, 0.75, (64, 64, 64), 1, cv2.LINE_AA)
         cv2.imshow(window, frame)
 
-        if key == ord('l'):
+        if key == ord('p'):
             guess = storage_invert[guess]
 
             if guess == 0:
