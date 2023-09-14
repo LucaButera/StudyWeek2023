@@ -162,5 +162,5 @@ cython_debug/
 
 # Project specific
 dataset/
-
 experiments/
+*.jpg
